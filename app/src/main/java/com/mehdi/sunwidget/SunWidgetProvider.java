@@ -23,11 +23,11 @@ public class SunWidgetProvider extends AppWidgetProvider {
         String time = new SimpleDateFormat("HH:mm", Locale.US).format(now.getTime());
         String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(now.getTime());
         String[] sun = solarTimes(now.get(Calendar.YEAR), now.get(Calendar.DAY_OF_YEAR));
-        RemoteViews v = new RemoteViews(c.getPackageName(), R.layout.sun_widget);
-        v.setTextViewText(R.id.time, time);
-        v.setTextViewText(R.id.date, "تهران  •  " + date);
-        v.setTextViewText(R.id.sunrise, "☀  طلوع  " + sun[0]);
-        v.setTextViewText(R.id.sunset, "☾  غروب  " + sun[1]);
+        RemoteViews v = new RemoteViews(c.getPackageName(), com.mehdi.sunwidget.R.layout.sun_widget);
+        v.setTextViewText(com.mehdi.sunwidget.R.id.time, time);
+        v.setTextViewText(com.mehdi.sunwidget.R.id.date, "تهران  •  " + date);
+        v.setTextViewText(com.mehdi.sunwidget.R.id.sunrise, "☀  طلوع  " + sun[0]);
+        v.setTextViewText(com.mehdi.sunwidget.R.id.sunset, "☾  غروب  " + sun[1]);
         m.updateAppWidget(id, v);
     }
 
