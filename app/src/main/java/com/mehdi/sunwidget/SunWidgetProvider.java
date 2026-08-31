@@ -22,7 +22,7 @@ public class SunWidgetProvider extends AppWidgetProvider {
         Calendar now = Calendar.getInstance(TEHRAN);
         String time = new SimpleDateFormat("HH:mm", Locale.US).format(now.getTime());
         String date = new SimpleDateFormat("yyyy/MM/dd", Locale.US).format(now.getTime());
-        String[] sun = solarTimes(now.get(Calendar.YEAR), now.get(Calendar.DAY_OF_YEAR));
+        String[] sun = solarTimes(now.get(Calendar.DAY_OF_YEAR));
         RemoteViews v = new RemoteViews(c.getPackageName(), com.mehdi.sunwidget.R.layout.sun_widget);
         v.setTextViewText(com.mehdi.sunwidget.R.id.time, time);
         v.setTextViewText(com.mehdi.sunwidget.R.id.date, "تهران  •  " + date);
@@ -31,7 +31,7 @@ public class SunWidgetProvider extends AppWidgetProvider {
         m.updateAppWidget(id, v);
     }
 
-    private static String[] solarTimes(int year, int day) {
+    private static String[] solarTimes(int day) {
         double tz = 3.5;
         double gamma = 2.0 * Math.PI / 365.0 * (day - 1);
         double eq = 229.18 * (0.000075 + 0.001868*Math.cos(gamma) - 0.032077*Math.sin(gamma)
