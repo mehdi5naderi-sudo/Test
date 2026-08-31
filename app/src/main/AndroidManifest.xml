@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:theme="@style/AppTheme" android:label="Sun Widget" android:resizeableActivity="true">
-        <receiver android:name=".SunWidgetProvider" android:exported="true">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE"/></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/sun_widget_info"/>
+    <application android:theme="@style/AppTheme" android:label="ساعت عقربه‌ای">
+        <receiver android:name=".ClockWidgetProvider" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/clock_widget_info" />
         </receiver>
     </application>
 </manifest>
