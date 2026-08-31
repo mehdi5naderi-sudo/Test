@@ -1,1 +1,5 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="2dp"><ImageView android:id="@+id/clock" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="ساعت عقربه‌ای"/></FrameLayout>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="8dp" android:background="@drawable/widget_bg">
+    <TextView android:id="@+id/hour" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="12" android:textSize="28sp" android:textColor="#FFFFFF" android:textStyle="bold" />
+    <TextView android:id="@+id/minute" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="38dp" android:text="00" android:textSize="16sp" android:textColor="#D0D5DD" />
+    <TextView android:id="@+id/second" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|center_horizontal" android:text="00" android:textSize="11sp" android:textColor="#FF6B6B" />
+</FrameLayout>
