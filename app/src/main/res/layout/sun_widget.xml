@@ -1,0 +1,8 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:padding="12dp" android:background="#172033">
+    <TextView android:id="@+id/time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--:--" android:textSize="28sp" android:textStyle="bold" android:textColor="#FFFFFF"/>
+    <TextView android:id="@+id/date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--" android:textSize="12sp" android:textColor="#B9C5D6"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginTop="8dp">
+        <TextView android:id="@+id/sunrise" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="☀ طلوع --:--" android:textColor="#FFD166" android:textSize="13sp"/>
+        <TextView android:id="@+id/sunset" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="☾ غروب --:--" android:textColor="#A8C7FF" android:textSize="13sp"/>
+    </LinearLayout>
+</LinearLayout>
