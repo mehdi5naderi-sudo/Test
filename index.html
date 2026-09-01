@@ -1,21 +1,29 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>صفحه تست</title>
-  <style>
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}.card{width:min(90%,520px);padding:42px 30px;text-align:center;border-radius:24px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);box-shadow:0 20px 50px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.25)}h1{font-size:34px;margin:0 0 16px}.subtitle{font-size:18px;opacity:.9;margin-bottom:28px}.btn{border:0;border-radius:14px;padding:13px 25px;font-size:17px;cursor:pointer;background:#fff;color:#5d4aa8;font-weight:bold}.msg{margin-top:22px;font-size:16px;min-height:24px}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>هنگمن | بازی حدس کلمه</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#141e30,#243b55);color:#fff;display:flex;justify-content:center;align-items:center;padding:16px}.game{width:min(100%,620px);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:26px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center}h1{margin:0 0 6px;font-size:32px}.hint{opacity:.75;margin-bottom:18px}.word{font-size:34px;letter-spacing:8px;min-height:48px;margin:18px 0;color:#fff}.status{font-size:17px;margin:8px 0 18px}.keyboard{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.key{border:0;border-radius:10px;padding:12px 4px;background:#fff;color:#182536;font-weight:bold;font-size:17px;cursor:pointer}.key:disabled{opacity:.25;cursor:default}.wrong{margin-top:16px;color:#ffccd2}.new{margin-top:20px;border:0;border-radius:13px;padding:13px 25px;background:#fff;color:#243b55;font-weight:bold;font-size:16px;cursor:pointer}.result{font-size:19px;font-weight:bold;min-height:28px}.hang{font-size:74px;line-height:1;margin:6px 0 10px} @media(max-width:430px){h1{font-size:27px}.word{font-size:27px;letter-spacing:5px}.keyboard{grid-template-columns:repeat(6,1fr)}.key{padding:10px 2px;font-size:16px}}
+</style>
 </head>
 <body>
-  <main class="card">
-    <h1>🎉 وب‌اپ تستی من</h1>
-    <div class="subtitle">این صفحه با موفقیت روی GitHub قرار گرفته است.</div>
-    <button class="btn" onclick="test()">کلیک برای تست</button>
-    <div class="msg" id="msg"></div>
-  </main>
-  <script>
-    function test(){document.getElementById('msg').textContent='✅ جاوااسکریپت هم به‌درستی کار می‌کند!';}
-  </script>
+<main class="game">
+<h1>🎯 هنگمن</h1><div class="hint">حروف کلمه را یکی‌یکی حدس بزن!</div>
+<div class="hang" id="hang">🪵</div><div class="word" id="word"></div>
+<div class="status" id="status"></div><div class="result" id="result"></div>
+<div class="keyboard" id="keyboard"></div><button class="new" onclick="newGame()">🔄 بازی جدید</button>
+</main>
+<script>
+const words=['کتاب','مدرسه','خورشید','دوچرخه','پرنده','کامپیوتر','هواپیما','باران','دریا','گربه','دوست','سیب','ماشین','کوه','باغ','پنجره','ماه','ستاره','جنگل','کشتی'];
+const letters=['ا','ب','پ','ت','ث','ج','چ','ح','خ','د','ذ','ر','ز','ژ','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','گ','ل','م','ن','و','ه','ی'];
+let word,guessed,wrong,maxWrong;
+function newGame(){word=words[Math.floor(Math.random()*words.length)];guessed=[];wrong=[];maxWrong=6;render();}
+function render(){document.getElementById('word').textContent=[...word].map(c=>guessed.includes(c)?c:'_').join(' ');document.getElementById('status').textContent=`فرصت باقی‌مانده: ${maxWrong-wrong.length} از ${maxWrong}`;document.getElementById('wrong').textContent='';document.getElementById('result').textContent='';document.getElementById('hang').textContent=['🪵','🪵🙂','🪵😐','🪵😟','🪵😰','🪵😨','🪦💀'][wrong.length];const kb=document.getElementById('keyboard');kb.innerHTML='';letters.forEach(l=>{const b=document.createElement('button');b.className='key';b.textContent=l;b.disabled=guessed.includes(l)||wrong.includes(l);b.onclick=()=>guess(l);kb.appendChild(b)});if([...word].every(c=>guessed.includes(c)))finish(true);if(wrong.length>=maxWrong)finish(false)}
+function guess(l){if(word.includes(l))guessed.push(l);else wrong.push(l);render()}
+function finish(win){document.getElementById('result').textContent=win?'🎉 آفرین! کلمه را پیدا کردی.':'❌ بازی تمام شد! کلمه: '+word;document.querySelectorAll('.key').forEach(b=>b.disabled=true)}
+newGame();
+</script>
 </body>
 </html>
