@@ -1,1 +1,151 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UNO فارسی</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#263b58,#0b1422 70%);font-family:Tahoma,Arial;color:#fff;padding:10px}.app{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.top h1{margin:0;font-size:27px}.btn,.ctrl{border:0;border-radius:12px;padding:10px 15px;font-weight:bold;cursor:pointer}.table{background:#ffffff10;border:1px solid #ffffff22;border-radius:24px;padding:14px;box-shadow:0 20px 60px #0008}.players{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.p{background:#ffffff0b;border-radius:13px;padding:9px;text-align:center;border:1px solid #ffffff15}.p.active{outline:2px solid #ffd43b}.p b{display:block}.p small{opacity:.75}.center{display:flex;justify-content:center;align-items:center;gap:25px;height:190px}.pile,.card{border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 7px 16px #0008}.pile{width:82px;height:116px;font-size:27px}.back{background:repeating-linear-gradient(45deg,#17213a,#17213a 8px,#263457 8px,#263457 16px);border:4px solid #fff}.card{width:72px;height:104px;border:3px solid #fff;font-size:24px;text-align:center}.red{background:#e53935}.yellow{background:#f6c51b;color:#151515}.green{background:#18a558}.blue{background:#287be8}.black{background:#20242c}.info{text-align:center;min-height:45px}.hand{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;min-height:108px}.hand .card{cursor:pointer;transition:.15s}.hand .card:hover{transform:translateY(-7px)}.off{opacity:.32;cursor:not-allowed!important;transform:none!important}.controls{text-align:center;margin-top:10px}.ctrl{margin:4px}.draw{background:#fff}.uno{background:#ffd02b}.hint{text-align:center;opacity:.7;font-size:12px;margin-top:8px}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:20px}.modal.on{display:flex}.box{background:#18243a;border-radius:20px;padding:22px;text-align:center;width:min(92%,400px)}.colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}.colors button{border:0;border-radius:12px;height:55px;font-weight:bold;font-size:17px;cursor:pointer}.cr{background:#e53935;color:#fff}.cy{background:#f6c51b}.cg{background:#18a558;color:#fff}.cb{background:#287be8;color:#fff}@media(max-width:520px){.top h1{font-size:22px}.table{padding:9px}.center{height:160px;gap:14px}.pile{width:70px;height:100px}.card{width:61px;height:90px;font-size:20px}.hand{gap:5px}}</style></head><body><div class="app"><div class="top"><h1>🃏 UNO فارسی</h1><button class="btn" onclick="newGame()">🔄 بازی جدید</button></div><div class="table"><div class="players" id="players"></div><div class="center"><div><div class="pile back" id="draw">🂠</div><div class="hint">دسته کارت</div></div><div><div class="pile" id="discard"></div><div class="hint">کارت زمین</div></div></div><div class="info"><b id="msg"></b><div class="hint" id="color"></div></div><h3 style="text-align:center">کارت‌های شما</h3><div class="hand" id="hand"></div><div class="controls"><button class="ctrl draw" onclick="humanDraw()">➕ برداشتن کارت</button><button class="ctrl uno" onclick="uno()">UNO 🔥</button></div><div class="hint">بازی شما در برابر ۳ حریف کامپیوتری است. ۷ کارت شروع؛ تطبیق رنگ، عدد یا نماد. شامل +۲، رد نوبت، تغییر جهت، وایلد و +۴.</div></div></div><div class="modal" id="modal"><div class="box"><h2>🎨 انتخاب رنگ</h2><div class="colors"><button class="cr" onclick="pick('red')">قرمز ❤️</button><button class="cy" onclick="pick('yellow')">زرد 💛</button><button class="cg" onclick="pick('green')">سبز 💚</button><button class="cb" onclick="pick('blue')">آبی 💙</button></div></div></div><script>const C=['red','yellow','green','blue'],FA={red:'قرمز',yellow:'زرد',green:'سبز',blue:'آبی'},N=['شما','🤖 علی','🤖 سارا','🤖 رضا'];let P,D,S,T,dir,col,wild,over,timer;function card(c,v){return{c,v,id:Math.random().toString(36).slice(2)}}function make(){let d=[];C.forEach(c=>{d.push(card(c,'0'));for(let n=1;n<10;n++)d.push(card(c,''+n),card(c,''+n));['skip','rev','+2'].forEach(v=>d.push(card(c,v),card(c,v)))});for(let i=0;i<4;i++)d.push(card('black','wild'),card('black','+4'));return d}function sh(a){for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}function newGame(){clearTimeout(timer);D=sh(make());S=[];P=[[],[],[],[]];T=0;dir=1;col=null;wild=null;over=false;for(let p=0;p<4;p++)for(let i=0;i<7;i++)P[p].push(D.pop());let x;do{x=D.pop()}while(x.c==='black');S=[x];col=x.c;msg('شروع شد! نوبت شماست.');render()}function top(){return S[S.length-1]}function refill(){if(D.length||S.length<2)return;let x=S.pop();D=sh(S);S=[x]}function drawCard(){refill();return D.pop()}function ok(x){let t=top();return x.c==='black'||x.c===col||x.v===t.v}function lab(v){return{skip:'⛔',rev:'↩️','+2':'+2',wild:'🌈','+4':'+4'}[v]||v}function html(x,off){return`<div class="card ${x.c}${off?' off':''}" ${!off?`onclick="play('${x.id}')"`:''}>${lab(x.v)}</div>`}function render(){document.getElementById('players').innerHTML=P.map((h,i)=>`<div class="p ${i===T?'active':''}"><b>${N[i]} ${i===T?'🎯':''}</b><small>${h.length} کارت${h.length===1?' ⚠️':''}</small></div>`).join('');document.getElementById('discard').className='pile '+top().c;document.getElementById('discard').textContent=lab(top().v);document.getElementById('draw').textContent='🂠 '+D.length;document.getElementById('hand').innerHTML=P[0].map(x=>html(x,over||T!==0||!ok(x))).join('');document.getElementById('color').textContent='رنگ فعلی: '+FA[col]}function msg(x){document.getElementById('msg').textContent=x;render()}function next(){T=(T+dir+4)%4}function play(id){if(over||T!==0)return;let i=P[0].findIndex(x=>x.id===id);if(i<0)return;let x=P[0][i];if(!ok(x)){msg('❌ این کارت قابل بازی نیست.');return}P[0].splice(i,1);use(x,0)}function use(x,p){S.push(x);if(x.c!=='black')col=x.c;if(P[p].length===0){win(p);return}if(x.v==='rev')dir*=-1;if(x.v==='skip')next();next();if(x.v==='+2')for(let i=0;i<2;i++){let z=drawCard();if(z)P[T].push(z)}if(x.v==='+4')for(let i=0;i<4;i++){let z=drawCard();if(z)P[T].push(z)}if(x.c==='black'&&p===0){wild=x;document.getElementById('modal').classList.add('on');msg('رنگ را انتخاب کن.');return}if(x.c==='black'){col=C[Math.floor(Math.random()*4)]}msg(N[p]+' کارت '+lab(x.v)+' را بازی کرد.');if(T!==0)timer=setTimeout(ai,650)}function pick(c){if(!wild)return;col=c;wild=null;document.getElementById('modal').classList.remove('on');msg('رنگ شد: '+FA[c]);if(T!==0)timer=setTimeout(ai,650)}function humanDraw(){if(over||T!==0)return;let x=drawCard();if(!x){msg('دسته کارت تمام شده است.');return}P[0].push(x);if(ok(x))msg('کارت قابل بازی است؛ می‌توانی آن را بازی کنی.');else{next();msg('کارت قابل بازی نبود؛ نوبت حریف.');timer=setTimeout(ai,600)}}function ai(){if(over||T===0)return;let p=T,h=P[p],a=h.filter(ok),x=a.length?a[Math.floor(Math.random()*a.length)]:drawCard();if(!x){next();timer=setTimeout(ai,500);return}if(!h.includes(x))h.push(x);if(!ok(x)){next();render();timer=setTimeout(ai,500);return}h.splice(h.indexOf(x),1);use(x,p)}function uno(){if(P[0].length===1)msg('🔥 UNO!');else msg('برای UNO باید فقط یک کارت داشته باشی.')}function win(p){over=true;clearTimeout(timer);msg(p===0?'🏆 شما برنده شدید! 🎉':N[p]+' برنده شد!');document.getElementById('color').textContent='برای شروع دوباره «بازی جدید» را بزن.'}newGame();</script></body></html>
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>UNO فارسی</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#07111f,#132b22);color:#fff;font-family:Tahoma,Arial,sans-serif;min-height:100vh;padding:10px}.app{max-width:900px;margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.top h1{margin:0;font-size:25px}.btn,.ctrl{border:0;border-radius:12px;padding:11px 15px;font-weight:700;cursor:pointer}.btn{background:#fff;color:#17202b}.table{background:#ffffff0d;border:1px solid #ffffff20;border-radius:22px;padding:12px;box-shadow:0 15px 45px #0008}.players{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.player{background:#ffffff0b;border:1px solid #ffffff18;border-radius:12px;padding:8px;text-align:center}.player.active{outline:2px solid #ffd43b;background:#ffffff18}.player b{display:block}.player small{opacity:.8}.center{display:flex;justify-content:center;align-items:center;gap:22px;min-height:155px}.pile,.card{display:flex;align-items:center;justify-content:center;border-radius:13px;font-weight:800;box-shadow:0 7px 16px #0009}.pile{width:76px;height:108px;border:3px solid #fff;font-size:18px;text-align:center}.back{background:repeating-linear-gradient(45deg,#17213a,#17213a 8px,#33466f 8px,#33466f 16px)}.card{width:68px;height:98px;border:3px solid #fff;font-size:23px;text-align:center;user-select:none}.red{background:#e53935}.yellow{background:#f6c51b;color:#111}.green{background:#16a05b}.blue{background:#2779e8}.black{background:#222832}.hand{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;min-height:105px}.hand .card{cursor:pointer;transition:.12s}.hand .card:hover{transform:translateY(-6px)}.disabled{opacity:.3;cursor:not-allowed!important}.info{text-align:center;min-height:45px;margin:2px 0}.info b{font-size:17px}.hint{text-align:center;font-size:12px;opacity:.72;margin:7px 0}.controls{text-align:center}.draw{background:#fff;color:#111}.uno{background:#ffd12e;color:#111}.modal{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;padding:20px;z-index:5}.modal.show{display:flex}.box{width:min(94%,390px);background:#18243a;border:1px solid #ffffff22;border-radius:20px;padding:20px;text-align:center}.colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}.colors button{height:55px;border:0;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer}.cr{background:#e53935;color:#fff}.cy{background:#f6c51b}.cg{background:#16a05b;color:#fff}.cb{background:#2779e8;color:#fff}.message{min-height:24px}.last{margin-top:8px;text-align:center;font-size:13px;opacity:.85}@media(max-width:520px){body{padding:7px}.table{padding:8px}.top h1{font-size:20px}.center{min-height:135px;gap:14px}.pile{width:66px;height:94px}.card{width:58px;height:86px;font-size:19px}.hand{gap:5px}.ctrl{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><h1>🃏 UNO فارسی</h1><button id="newGame" class="btn">🔄 بازی جدید</button></div>
+  <div class="table">
+    <div id="players" class="players"></div>
+    <div class="center">
+      <div><div id="drawPile" class="pile back">🂠</div><div class="hint">برداشت</div></div>
+      <div><div id="discard" class="pile"></div><div class="hint">زمین</div></div>
+    </div>
+    <div class="info"><div id="message" class="message"></div><div id="color" class="hint"></div></div>
+    <h3 style="text-align:center;margin:8px 0">کارت‌های شما</h3>
+    <div id="hand" class="hand"></div>
+    <div class="controls"><button id="drawBtn" class="ctrl draw">➕ برداشتن کارت</button><button id="unoBtn" class="ctrl uno">UNO 🔥</button></div>
+    <div class="last">قوانین پایه UNO: تطبیق رنگ یا عدد/نماد؛ شامل Skip، Reverse، +2، Wild و +4. هر نفر ۷ کارت شروع می‌کند.</div>
+  </div>
+</div>
+<div id="modal" class="modal"><div class="box"><h2>🎨 انتخاب رنگ</h2><p>رنگ کارت وایلد را انتخاب کن</p><div class="colors"><button data-color="red" class="cr">قرمز ❤️</button><button data-color="yellow" class="cy">زرد 💛</button><button data-color="green" class="cg">سبز 💚</button><button data-color="blue" class="cb">آبی 💙</button></div></div></div>
+<script>
+'use strict';
+const COLORS=['red','yellow','green','blue'];
+const COLOR_NAME={red:'قرمز',yellow:'زرد',green:'سبز',blue:'آبی'};
+const NAMES=['شما','🤖 علی','🤖 سارا','🤖 رضا'];
+const LABEL={skip:'⛔',reverse:'↩️','+2':'+2',wild:'🌈','+4':'+4'};
+let deck=[],discard=[],hands=[],turn=0,direction=1,currentColor='',pendingWild=null,gameOver=false,aiTimer=null,unoCalled=false;
+
+function makeCard(color,value){return {color,value,id:Math.random().toString(36).slice(2)+Date.now()}}
+function buildDeck(){
+  const d=[];
+  COLORS.forEach(c=>{
+    d.push(makeCard(c,'0'));
+    for(let n=1;n<=9;n++){d.push(makeCard(c,String(n)));d.push(makeCard(c,String(n)))}
+    ['skip','reverse','+2'].forEach(v=>{d.push(makeCard(c,v));d.push(makeCard(c,v))});
+  });
+  for(let i=0;i<4;i++){d.push(makeCard('black','wild'));d.push(makeCard('black','+4'))}
+  return d;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function refill(){
+  if(deck.length>0||discard.length<2)return;
+  const top=discard.pop();deck=shuffle(discard);discard=[top];
+}
+function drawOne(){refill();return deck.pop()||null}
+function topCard(){return discard[discard.length-1]}
+function playable(c){const t=topCard();return !!c&&(c.color==='black'||c.color===currentColor||c.value===t.value)}
+function nextPlayer(){turn=(turn+direction+4)%4}
+function setMessage(text){document.getElementById('message').textContent=text}
+function label(v){return LABEL[v]||v}
+
+function newGame(){
+  clearTimeout(aiTimer);deck=shuffle(buildDeck());discard=[];hands=[[],[],[],[]];turn=0;direction=1;currentColor='';pendingWild=null;gameOver=false;unoCalled=false;
+  for(let p=0;p<4;p++)for(let i=0;i<7;i++)hands[p].push(drawOne());
+  let first=drawOne();
+  while(first && first.color==='black'){deck.unshift(first);first=drawOne()}
+  discard.push(first);currentColor=first.color;
+  setMessage('🎮 بازی شروع شد؛ نوبت شماست.');render();
+}
+
+function render(){
+  const players=document.getElementById('players');
+  players.innerHTML='';
+  hands.forEach((h,i)=>{const el=document.createElement('div');el.className='player'+(i===turn?' active':'');el.innerHTML='<b>'+NAMES[i]+(i===turn?' 🎯':'')+'</b><small>'+h.length+' کارت'+(h.length===1?' ⚠️':'')+'</small>';players.appendChild(el)});
+  const t=topCard();
+  const dc=document.getElementById('discard');dc.className='pile '+t.color;dc.textContent=label(t.value);
+  document.getElementById('drawPile').textContent='🂠 '+deck.length;
+  document.getElementById('color').textContent='رنگ فعلی: '+COLOR_NAME[currentColor];
+  const hand=document.getElementById('hand');hand.innerHTML='';
+  hands[0].forEach((c,i)=>{const el=document.createElement('div');el.className='card '+c.color+((turn!==0||gameOver||!playable(c))?' disabled':'');el.textContent=label(c.value);el.dataset.index=i;el.addEventListener('click',()=>humanPlay(i));hand.appendChild(el)});
+  document.getElementById('drawBtn').disabled=gameOver||turn!==0;
+  document.getElementById('unoBtn').disabled=gameOver||turn!==0;
+}
+
+function humanPlay(index){
+  if(gameOver||turn!==0||pendingWild)return;
+  const c=hands[0][index];if(!playable(c)){setMessage('❌ این کارت قابل بازی نیست.');return}
+  if(hands[0].length===2 && c){
+    hands[0].splice(index,1);
+    if(hands[0].length===1 && !unoCalled){hands[0].push(drawOne(),drawOne());setMessage('⚠️ UNO نگفتی؛ ۲ کارت جریمه شدی.');render();return}
+  }else hands[0].splice(index,1);
+  unoCalled=false;playCard(c,0);
+}
+
+function playCard(c,player){
+  discard.push(c);
+  if(c.color!=='black')currentColor=c.color;
+  if(hands[player].length===0){gameOver=true;clearTimeout(aiTimer);setMessage(player===0?'🏆 شما برنده شدید! 🎉':NAMES[player]+' برنده شد!');render();return}
+  if(c.color==='black'){
+    if(player===0){pendingWild=c;document.getElementById('modal').classList.add('show');setMessage('🎨 یک رنگ انتخاب کن.');render();return}
+    currentColor=chooseAIColor(hands[player]);
+    setMessage(NAMES[player]+' رنگ '+COLOR_NAME[currentColor]+' را انتخاب کرد.');
+  }
+  applyEffect(c,player);
+}
+
+function applyEffect(c,player){
+  if(c.value==='reverse')direction*=-1;
+  if(c.value==='skip'){nextPlayer();nextPlayer()}
+  else if(c.value==='+2'){nextPlayer();drawTo(turn,2);nextPlayer()}
+  else if(c.value==='+4'){nextPlayer();drawTo(turn,4);nextPlayer()}
+  else nextPlayer();
+  render();
+  if(!gameOver){setMessage('نوبت '+NAMES[turn]+' است.');render();if(turn!==0)aiTimer=setTimeout(aiTurn,650)}
+}
+
+function drawTo(p,n){for(let i=0;i<n;i++){const c=drawOne();if(c)hands[p].push(c)}}
+function chooseAIColor(h){const count={red:0,yellow:0,green:0,blue:0};h.forEach(c=>{if(count[c.color]!==undefined)count[c.color]++});return COLORS.reduce((a,b)=>count[b]>count[a]?b:a,COLORS[0])}
+
+function aiTurn(){
+  if(gameOver||turn===0)return;
+  const p=turn,h=hands[p];
+  let idx=h.findIndex(playable);
+  if(idx===-1){const c=drawOne();if(c)h.push(c);render();if(c&&playable(c)){idx=h.length-1}else{nextPlayer();setMessage('🤖 '+NAMES[p]+' کارت برداشت و نوبتش تمام شد.');render();if(turn!==0)aiTimer=setTimeout(aiTurn,650);return}}
+  const c=h[idx];h.splice(idx,1);playCard(c,p);
+}
+
+function humanDraw(){
+  if(gameOver||turn!==0||pendingWild)return;
+  const c=drawOne();if(!c){setMessage('دسته کارت خالی است.');return}
+  hands[0].push(c);render();
+  if(playable(c))setMessage('🃏 کارت برداشته‌شده قابل بازی است؛ می‌توانی همان را بازی کنی.');
+  else{nextPlayer();setMessage('کارت قابل بازی نبود؛ نوبت حریف.');render();aiTimer=setTimeout(aiTurn,650)}
+}
+function callUNO(){
+  if(gameOver||turn!==0)return;
+  if(hands[0].length===1){unoCalled=true;setMessage('🔥 UNO!');render()}
+  else if(hands[0].length===2){unoCalled=true;setMessage('🔥 UNO اعلام شد! حالا کارتت را بازی کن.');render()}
+  else setMessage('برای UNO باید یک کارت یا دو کارت در دست داشته باشی.');
+}
+function pickColor(color){
+  if(!pendingWild)return;
+  currentColor=color;pendingWild=null;document.getElementById('modal').classList.remove('show');
+  applyEffect(discard[discard.length-1],0);
+}
+
+document.getElementById('newGame').addEventListener('click',newGame);
+document.getElementById('drawBtn').addEventListener('click',humanDraw);
+document.getElementById('unoBtn').addEventListener('click',callUNO);
+document.querySelectorAll('[data-color]').forEach(b=>b.addEventListener('click',()=>pickColor(b.dataset.color)));
+newGame();
+</script>
+</body>
+</html>
